@@ -10,6 +10,12 @@ export function meta({}: Route.MetaArgs) {
 export default function LoginPage() {
   const navigate = useNavigate();
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    // console.log(formData.get("email"));
+  };
+
   return (
     <>
       <div className="w-full h-screen overflow-x-hidden flex items-center justify-center gap-10">
@@ -23,10 +29,10 @@ export default function LoginPage() {
           </span>
         </div>
         <div className="w-120 shadow-xl border p-4 rounded-md">
-          <div className="flex flex-col gap-y-3">
-            <Input type="email" placeholder="Email" />
-            <Input type="password" placeholder="Mật khẩu" />
-            <Button className="py-6" variant={"login"}>
+          <form className="flex flex-col gap-y-3" onSubmit={handleSubmit}>
+            <Input type="email" name="email" placeholder="Email" />
+            <Input type="password" name="password" placeholder="Mật khẩu" />
+            <Button className="py-6" type="submit" variant={"login"}>
               Đăng nhập
             </Button>
             <span className="my-2 mx-auto text-blue-500 cursor-pointer hover:underline decoration-sky-500">
@@ -39,7 +45,7 @@ export default function LoginPage() {
             >
               Tạo tài khoản mới
             </Button>
-          </div>
+          </form>
         </div>
       </div>
     </>

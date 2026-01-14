@@ -1,10 +1,16 @@
-import React from "react";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { AppSidebar } from "~/components/ui/app-sidebar";
 import { Outlet } from "react-router";
+import Header from "~/components/layout/Header/Header";
 
-export default function AdminLayout() {
+export default function Layout() {
   return (
-    <div>
-      <Outlet />
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="w-full">
+        <Header />
+        <Outlet />
+      </main>
+    </SidebarProvider>
   );
 }
