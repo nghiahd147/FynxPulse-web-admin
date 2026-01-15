@@ -1,4 +1,19 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  User,
+  Newspaper,
+  MessageCircleMore,
+  Hash,
+  Home,
+  Inbox,
+  Search,
+  UserCheck,
+  Handshake,
+  Settings,
+  SmilePlus,
+  Mailbox,
+  Bell,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -13,29 +28,54 @@ import {
 
 const items = [
   {
-    title: "Home",
-    url: "#",
+    title: "Dashboard",
+    url: "/dashboard",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Users",
+    url: "/dashboard/users",
+    icon: User,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Posts",
+    url: "/dashboard/posts",
+    icon: Newspaper,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Comments",
+    url: "/dashboard/comments",
+    icon: MessageCircleMore,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Hashtag",
+    url: "/dashboard/hashtag",
+    icon: Hash,
+  },
+  {
+    title: "Friendships",
+    url: "/dashboard/friendships",
+    icon: Handshake,
+  },
+  {
+    title: "Followers",
+    url: "/dashboard/followers",
+    icon: UserCheck,
+  },
+  {
+    title: "Reactions",
+    url: "/dashboard/reactions",
+    icon: SmilePlus,
+  },
+  {
+    title: "Conversation Messages",
+    url: "/dashboard/conversation-messages",
+    icon: Mailbox,
+  },
+  {
+    title: "Notifications",
+    url: "/dashboard/notifications",
+    icon: Bell,
   },
 ];
 
