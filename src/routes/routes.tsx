@@ -5,6 +5,9 @@ import Posts from "../pages/Posts/Posts";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../pages/Auth/Login";
 import NotFound from "../pages/NotFound/NotFound";
+import Users from "../pages/Users/Users";
+import HashTags from "../pages/HashTags/HashTags";
+import Comments from "../pages/Comments/Comments";
 
 export const routes = createBrowserRouter([
   {
@@ -16,8 +19,20 @@ export const routes = createBrowserRouter([
         element: <Dashboard />,
       },
       {
+        path: "users",
+        element: <Users />,
+      },
+      {
+        path: "hashtags",
+        element: <HashTags />,
+      },
+      {
         path: "posts",
         element: <Posts />,
+      },
+      {
+        path: "comments",
+        element: <Comments />,
       },
     ],
   },

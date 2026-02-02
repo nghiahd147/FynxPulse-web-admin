@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Tooltip } from "antd";
-import { LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  MessageCircle,
+  Newspaper,
+  TagIcon,
+  User,
+} from "lucide-react";
+import { Link, Outlet } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
@@ -20,10 +22,12 @@ const App: React.FC = () => {
   return (
     <Layout className="h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="h-14 flex items-center justify-center">
-          <span className="text-orange-500 font-bold mx-2 py-6 text-3xl">
-            Fynx
-          </span>
+        <div className="flex items-center justify-center h-auto">
+          <img
+            src="/public/icons8-yelp.svg"
+            className="w-20 h-20 my-2"
+            alt="Logo"
+          />
         </div>
         <div className="demo-logo-vertical" />
         <Menu
@@ -32,19 +36,29 @@ const App: React.FC = () => {
           defaultSelectedKeys={["1"]}
           items={[
             {
-              key: "1",
-              icon: <UserOutlined />,
-              label: "nav 1",
+              key: "dashboard",
+              icon: <LayoutDashboard size={15} />,
+              label: <Link to={"/"}>Dashboard</Link>,
             },
             {
-              key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "nav 2",
+              key: "users",
+              icon: <User size={15} />,
+              label: <Link to={"/users"}>User</Link>,
             },
             {
-              key: "3",
-              icon: <UploadOutlined />,
-              label: "nav 3",
+              key: "posts",
+              icon: <Newspaper size={15} />,
+              label: <Link to={"/posts"}>Post</Link>,
+            },
+            {
+              key: "comments",
+              icon: <MessageCircle size={15} />,
+              label: <Link to={"/comments"}>Comment</Link>,
+            },
+            {
+              key: "hashtag",
+              icon: <TagIcon size={15} />,
+              label: <Link to={"/hashtags"}>Hashtag</Link>,
             },
           ]}
         />
@@ -77,7 +91,7 @@ const App: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
