@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Tooltip } from "antd";
-import {
-  LayoutDashboard,
-  LogOut,
-  MessageCircle,
-  Newspaper,
-  TagIcon,
-  User,
-} from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { LogOut } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import { navigate } from "../config/navigation";
 
 const { Header, Sider, Content } = Layout;
 
@@ -34,33 +28,7 @@ const App: React.FC = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
-          items={[
-            {
-              key: "dashboard",
-              icon: <LayoutDashboard size={15} />,
-              label: <Link to={"/"}>Dashboard</Link>,
-            },
-            {
-              key: "users",
-              icon: <User size={15} />,
-              label: <Link to={"/users"}>User</Link>,
-            },
-            {
-              key: "posts",
-              icon: <Newspaper size={15} />,
-              label: <Link to={"/posts"}>Post</Link>,
-            },
-            {
-              key: "comments",
-              icon: <MessageCircle size={15} />,
-              label: <Link to={"/comments"}>Comment</Link>,
-            },
-            {
-              key: "hashtag",
-              icon: <TagIcon size={15} />,
-              label: <Link to={"/hashtags"}>Hashtag</Link>,
-            },
-          ]}
+          items={navigate}
         />
       </Sider>
       <Layout>

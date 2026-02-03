@@ -18,7 +18,7 @@ export const HEADERS = {
 
 export const API_URLS = {
   USERS: {
-    getListUsers: (params) => ({
+    getListUsers: (params: string) => ({
       endPoint: "/api/v1/users/",
       method: "GET",
       headers: HEADERS.DEFAULT_HEADER,
