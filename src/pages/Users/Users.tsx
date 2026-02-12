@@ -1,50 +1,63 @@
-import React from "react";
-import { Flex, Space, Table, Tag, Input, Select } from "antd";
+import React, { useEffect } from "react";
+import { Table, Input, Select, Button } from "antd";
 import type { SearchProps } from "antd/es/input";
+import useUsersStore from "../../store/useUserStore";
+import type { UserType } from "../../types";
+import type { ColumnsType } from "antd/es/table";
 
-const { Column, ColumnGroup } = Table;
-
-interface DataType {
-  key: React.Key;
-  firstName: string;
-  lastName: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
-
-const data: DataType[] = [
+const columns: ColumnsType<UserType> = [
   {
-    key: "1",
-    firstName: "John",
-    lastName: "Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"],
+    title: "First Name",
+    dataIndex: "first_name",
+    key: "first_name",
   },
   {
-    key: "2",
-    firstName: "Jim",
-    lastName: "Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["loser"],
+    title: "Last Name",
+    dataIndex: "last_name",
+    key: "last_name",
   },
   {
-    key: "3",
-    firstName: "Joe",
-    lastName: "Black",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    tags: ["cool", "teacher"],
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: "Password",
+    dataIndex: "password",
+    key: "password",
+  },
+  {
+    title: "Date of birth",
+    dataIndex: "date_of_birth",
+    key: "date_of_birth",
+  },
+  {
+    title: "Actions",
+    render: () => {
+      return (
+        <>
+          <div className="flex gap-x-2 items-center">
+            <Button>Edit</Button>
+            <Button>Delete</Button>
+          </div>
+        </>
+      );
+    },
   },
 ];
 
 const Users: React.FC = () => {
   const { Search } = Input;
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const { getListUsers, data, pagination, isLoading } = useUsersStore();
+
+  useEffect(() => {
+    getListUsers("");
+  }, []);
+
+  const onSearch: SearchProps["onSearch"] = (value) => {
+    console.log(value);
+  };
 
   return (
     <>
@@ -68,44 +81,15 @@ const Users: React.FC = () => {
           ]}
         />
       </div>
-      <Table<DataType> dataSource={data}>
-        <ColumnGroup title="Name">
-          <Column title="First Name" dataIndex="firstName" key="firstName" />
-          <Column title="Last Name" dataIndex="lastName" key="lastName" />
-        </ColumnGroup>
-        <Column title="Age" dataIndex="age" key="age" />
-        <Column title="Address" dataIndex="address" key="address" />
-        <Column
-          title="Tags"
-          dataIndex="tags"
-          key="tags"
-          render={(tags: string[]) => (
-            <Flex gap="small" align="center" wrap>
-              {tags.map((tag) => {
-                let color = tag.length > 5 ? "geekblue" : "green";
-                if (tag === "loser") {
-                  color = "volcano";
-                }
-                return (
-                  <Tag color={color} key={tag}>
-                    {tag.toUpperCase()}
-                  </Tag>
-                );
-              })}
-            </Flex>
-          )}
-        />
-        <Column
-          title="Action"
-          key="action"
-          render={(_, record: DataType) => (
-            <Space size="middle">
-              <a>Invite {record.lastName}</a>
-              <a>Delete</a>
-            </Space>
-          )}
-        />
-      </Table>
+      <Table<UserType>
+        columns={columns}
+        rowKey={(record) => `${record._id}_table`}
+        pagination={{
+          pageSize: pagination.page_size,
+        }}
+        dataSource={data}
+        loading={isLoading}
+      />
     </>
   );
 };

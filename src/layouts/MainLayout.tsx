@@ -51,10 +51,12 @@ const App: React.FC = () => {
           </Tooltip>
         </Header>
         <Content
+          className="hidden-scroll"
           style={{
             margin: "24px 16px",
             padding: 24,
-            minHeight: 280,
+            height: "100vh",
+            overflowY: "auto",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

@@ -1,3 +1,5 @@
+import type { UserType } from "../types";
+
 export const HEADERS = {
   DEFAULT_HEADER: {
     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -19,7 +21,7 @@ export const HEADERS = {
 export const API_URLS = {
   USERS: {
     getListUsers: (params: string) => ({
-      endPoint: "/api/v1/users/",
+      endPoint: "/api/user/",
       method: "GET",
       headers: HEADERS.DEFAULT_HEADER,
       params,
