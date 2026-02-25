@@ -1,5 +1,3 @@
-import type { UserType } from "../types";
-
 export const HEADERS = {
   DEFAULT_HEADER: {
     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",

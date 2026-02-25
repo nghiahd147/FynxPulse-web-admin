@@ -11,26 +11,26 @@ export const navigate = [
   {
     key: "dashboard",
     icon: <LayoutDashboard size={15} />,
-    label: <Link to={"/"}>Dashboard</Link>,
+    label: <Link to={"/"}>Thống kê</Link>,
   },
   {
     key: "users",
     icon: <User size={15} />,
-    label: <Link to={"/users"}>User</Link>,
+    label: <Link to={"/users"}>Người dùng</Link>,
   },
   {
     key: "posts",
     icon: <Newspaper size={15} />,
-    label: <Link to={"/posts"}>Post</Link>,
+    label: <Link to={"/posts"}>Bài viết</Link>,
   },
   {
     key: "comments",
     icon: <MessageCircle size={15} />,
-    label: <Link to={"/comments"}>Comment</Link>,
+    label: <Link to={"/comments"}>Bình luận</Link>,
   },
   {
     key: "hashtag",
     icon: <TagIcon size={15} />,
-    label: <Link to={"/hashtags"}>Hashtag</Link>,
+    label: <Link to={"/hashtags"}>Thẻ gắn nhãn</Link>,
   },
 ];
