@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Table, Input, Select, Button } from "antd";
+import { Table, Input, Select, Button, Tooltip, Badge } from "antd";
 import type { SearchProps } from "antd/es/input";
 import useUsersStore from "../../store/useUserStore";
 import type { UserType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import { PAGINATION } from "../../constants/pagination";
+import { convertDayMonthYear } from "../../utils/date";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 
 const columns: ColumnsType<UserType> = [
   {
     title: "Họ",
     dataIndex: "first_name",
     key: "first_name",
+    render: (value) => {
+      return value || "-";
+    },
   },
   {
     title: "Tên",
     dataIndex: "last_name",
     key: "last_name",
+    render: (value) => {
+      return value || "-";
+    },
   },
   {
     title: "Email",
@@ -31,6 +40,35 @@ const columns: ColumnsType<UserType> = [
     title: "Ngày sinh",
     dataIndex: "date_of_birth",
     key: "date_of_birth",
+    render: (value) => {
+      return convertDayMonthYear(value);
+    },
+  },
+  {
+    title: "Xác thực",
+    dataIndex: "verify",
+    key: "verify",
+    render: (value) => {
+      return value == 0 ? (
+        <Badge
+          key={VERIFY_LABEL.UNVERIFIED}
+          color={"geekblue"}
+          text={VERIFY_LABEL.UNVERIFIED}
+        />
+      ) : value == 1 ? (
+        <Badge
+          key={VERIFY_LABEL.VERIFIED}
+          color={"lime"}
+          text={VERIFY_LABEL.VERIFIED}
+        />
+      ) : (
+        <Badge
+          key={VERIFY_LABEL.BANNED}
+          color={"red"}
+          text={VERIFY_LABEL.BANNED}
+        />
+      );
+    },
   },
   {
     title: "Hành động",
@@ -38,8 +76,16 @@ const columns: ColumnsType<UserType> = [
       return (
         <>
           <div className="flex gap-x-2 items-center">
-            <Button>Sửa</Button>
-            <Button>Xóa</Button>
+            <Tooltip title="Chi tiết">
+              <Button color="default" variant="outlined">
+                <EyeOutlined />
+              </Button>
+            </Tooltip>
+            <Tooltip title="Xóa">
+              <Button color="danger" variant="outlined">
+                <DeleteOutlined />
+              </Button>
+            </Tooltip>
           </div>
         </>
       );
@@ -54,10 +100,11 @@ const Users: React.FC = () => {
   const [page, setPage] = useState(PAGINATION.PAGE);
   const [page_size, setPageSize] = useState(PAGINATION.PAGE_SIZE);
   const [search, setSearch] = useState("");
+  const [verify, setVerify] = useState();
 
   useEffect(() => {
-    getListUsers({ page, page_size, search });
-  }, [page, search]);
+    getListUsers({ page, page_size, search, verify });
+  }, [page, search, verify]);
 
   const onSearch: SearchProps["onSearch"] = (value) => {
     setSearch(value);
@@ -92,10 +139,12 @@ const Users: React.FC = () => {
           }}
           placeholder="Chọn trạng thái xác thực"
           options={[
-            { value: "Unverified", label: "Unverified" },
-            { value: "Verified", label: "Verified" },
-            { value: "Banned", label: "Banned" },
+            { value: VERIFY_VALUE.UNVERIFIED, label: VERIFY_LABEL.UNVERIFIED },
+            { value: VERIFY_VALUE.VERIFIED, label: VERIFY_LABEL.VERIFIED },
+            { value: VERIFY_VALUE.BANNED, label: VERIFY_LABEL.BANNED },
           ]}
+          allowClear
+          onChange={(value) => setVerify(value)}
         />
         <Select
           className="w-50"

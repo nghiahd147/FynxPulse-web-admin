@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Pagination, UserType } from "../types";
+import type { UserType } from "../types";
 import { apiCall } from "../utils/axios";
 import { API_URLS } from "../config/api";
 
