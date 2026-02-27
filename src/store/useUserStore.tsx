@@ -8,6 +8,7 @@ type UserStore = {
   data: UserType[];
   total: string | null;
   getListUsers: (params: any) => void;
+  deleteUser: (id: string) => void;
 };
 
 const useUsersStore = create<UserStore>()((set) => ({
@@ -19,7 +20,15 @@ const useUsersStore = create<UserStore>()((set) => ({
     set({ isLoading: true });
     try {
       const res = await apiCall(API_URLS.USERS.getListUsers(params));
-      set({ data: res.data, total: res.pagination.total, isLoading: false });
+      set({ data: res.data, total: res.pagination.total });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  deleteUser: async (id) => {
+    set({ isLoading: true });
+    try {
+      await apiCall(API_URLS.USERS.deleteUser(id));
     } finally {
       set({ isLoading: false });
     }

@@ -24,5 +24,10 @@ export const API_URLS = {
       headers: HEADERS.DEFAULT_HEADER,
       params,
     }),
+    deleteUser: (id: string) => ({
+      endPoint: `/api/user/${id}`,
+      method: "DELETE",
+      headers: HEADERS.DEFAULT_HEADER,
+    }),
   },
 };

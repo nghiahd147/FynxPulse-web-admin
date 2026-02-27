@@ -3,7 +3,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Tooltip } from "antd";
 import { LogOut } from "lucide-react";
 import { Outlet } from "react-router-dom";
-import { navigate } from "../config/navigation";
+import { navigate } from "../components/Navigation/navigation";
 
 const { Header, Sider, Content } = Layout;
 

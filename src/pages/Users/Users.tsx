@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, Input, Select, Button, Tooltip, Badge } from "antd";
+import {
+  Table,
+  Input,
+  Select,
+  Button,
+  Tooltip,
+  Badge,
+  Tag,
+  Popconfirm,
+} from "antd";
 import type { SearchProps } from "antd/es/input";
 import useUsersStore from "../../store/useUserStore";
 import type { UserType } from "../../types";
@@ -9,106 +18,139 @@ import { convertDayMonthYear } from "../../utils/date";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 
-const columns: ColumnsType<UserType> = [
-  {
-    title: "Họ",
-    dataIndex: "first_name",
-    key: "first_name",
-    render: (value) => {
-      return value || "-";
-    },
-  },
-  {
-    title: "Tên",
-    dataIndex: "last_name",
-    key: "last_name",
-    render: (value) => {
-      return value || "-";
-    },
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
-  },
-  {
-    title: "Mật khẩu",
-    dataIndex: "password",
-    key: "password",
-  },
-  {
-    title: "Ngày sinh",
-    dataIndex: "date_of_birth",
-    key: "date_of_birth",
-    render: (value) => {
-      return convertDayMonthYear(value);
-    },
-  },
-  {
-    title: "Xác thực",
-    dataIndex: "verify",
-    key: "verify",
-    render: (value) => {
-      return value == 0 ? (
-        <Badge
-          key={VERIFY_LABEL.UNVERIFIED}
-          color={"geekblue"}
-          text={VERIFY_LABEL.UNVERIFIED}
-        />
-      ) : value == 1 ? (
-        <Badge
-          key={VERIFY_LABEL.VERIFIED}
-          color={"lime"}
-          text={VERIFY_LABEL.VERIFIED}
-        />
-      ) : (
-        <Badge
-          key={VERIFY_LABEL.BANNED}
-          color={"red"}
-          text={VERIFY_LABEL.BANNED}
-        />
-      );
-    },
-  },
-  {
-    title: "Hành động",
-    render: () => {
-      return (
-        <>
-          <div className="flex gap-x-2 items-center">
-            <Tooltip title="Chi tiết">
-              <Button color="default" variant="outlined">
-                <EyeOutlined />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Xóa">
-              <Button color="danger" variant="outlined">
-                <DeleteOutlined />
-              </Button>
-            </Tooltip>
-          </div>
-        </>
-      );
-    },
-  },
-];
-
 const Users: React.FC = () => {
   const { Search } = Input;
 
-  const { getListUsers, data, total, isLoading } = useUsersStore();
+  const { getListUsers, deleteUser, data, total, isLoading } = useUsersStore();
   const [page, setPage] = useState(PAGINATION.PAGE);
   const [page_size, setPageSize] = useState(PAGINATION.PAGE_SIZE);
   const [search, setSearch] = useState("");
   const [verify, setVerify] = useState();
+  const [role, setRole] = useState();
+  const [is_active, setActive] = useState();
 
   useEffect(() => {
-    getListUsers({ page, page_size, search, verify });
-  }, [page, search, verify]);
+    getListUsers({ page, page_size, search, verify, role, is_active });
+  }, [page, search, verify, role, is_active]);
 
   const onSearch: SearchProps["onSearch"] = (value) => {
     setSearch(value);
   };
+
+  const columns: ColumnsType<UserType> = [
+    {
+      title: "Họ",
+      dataIndex: "first_name",
+      key: "first_name",
+      render: (value) => {
+        return value || "-";
+      },
+    },
+    {
+      title: "Tên",
+      dataIndex: "last_name",
+      key: "last_name",
+      render: (value) => {
+        return value || "-";
+      },
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Mật khẩu",
+      dataIndex: "password",
+      key: "password",
+    },
+    {
+      title: "Ngày sinh",
+      dataIndex: "date_of_birth",
+      key: "date_of_birth",
+      render: (value) => {
+        return convertDayMonthYear(value);
+      },
+    },
+    {
+      title: "Xác thực",
+      dataIndex: "verify",
+      key: "verify",
+      render: (value) => {
+        return value == 0 ? (
+          <Badge
+            key={VERIFY_LABEL.UNVERIFIED}
+            color={"geekblue"}
+            text={VERIFY_LABEL.UNVERIFIED}
+          />
+        ) : value == 1 ? (
+          <Badge
+            key={VERIFY_LABEL.VERIFIED}
+            color={"lime"}
+            text={VERIFY_LABEL.VERIFIED}
+          />
+        ) : (
+          <Badge
+            key={VERIFY_LABEL.BANNED}
+            color={"red"}
+            text={VERIFY_LABEL.BANNED}
+          />
+        );
+      },
+    },
+    {
+      title: "Trang thái hoạt động",
+      dataIndex: "active",
+      key: "active",
+      render: (value) =>
+        value == true ? (
+          <Tag color={"green"} key={"is_active"}>
+            Hoạt động
+          </Tag>
+        ) : (
+          <Tag color={"red"} key={"not_active"}>
+            Không hoạt động
+          </Tag>
+        ),
+    },
+    {
+      title: "Hành động",
+      dataIndex: "active",
+      render: (_, record) => {
+        return (
+          <>
+            <div className="flex gap-x-2 items-center">
+              <Tooltip title="Chi tiết">
+                <Button color="default" variant="outlined">
+                  <EyeOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  title="Sure to delete?"
+                  onConfirm={() => {
+                    deleteUser(record._id as string);
+                    getListUsers({
+                      page,
+                      page_size,
+                      search,
+                      verify,
+                      role,
+                      is_active,
+                    });
+                  }}
+                >
+                  <Button color="danger" variant="outlined">
+                    <DeleteOutlined />
+                  </Button>
+                </Popconfirm>
+              </Tooltip>
+            </div>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
     <>
@@ -127,9 +169,11 @@ const Users: React.FC = () => {
           }}
           placeholder="Chọn quyền"
           options={[
-            { value: "admin", label: "Admin" },
-            { value: "user", label: "User" },
+            { value: 0, label: "Admin" },
+            { value: 1, label: "User" },
           ]}
+          allowClear
+          onChange={(value) => setRole(value)}
         />
         <Select
           className="w-50"
@@ -152,11 +196,13 @@ const Users: React.FC = () => {
             filterOption: (input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
           }}
-          placeholder="Chọn quyền"
+          placeholder="Chọn trạng thái hoạt động"
           options={[
             { value: false, label: "Không hoạt động" },
             { value: true, label: "Đang hoạt động" },
           ]}
+          allowClear
+          onChange={(value) => setActive(value)}
         />
       </div>
       <Table<UserType>
