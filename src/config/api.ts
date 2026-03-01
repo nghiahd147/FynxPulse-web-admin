@@ -19,10 +19,15 @@ export const HEADERS = {
 export const API_URLS = {
   USERS: {
     getListUsers: (params: string) => ({
-      endPoint: "/api/v1/users/",
+      endPoint: "/api/user/",
       method: "GET",
       headers: HEADERS.DEFAULT_HEADER,
       params,
+    }),
+    deleteUser: (id: string) => ({
+      endPoint: `/api/user/${id}`,
+      method: "DELETE",
+      headers: HEADERS.DEFAULT_HEADER,
     }),
   },
 };

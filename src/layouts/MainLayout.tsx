@@ -3,7 +3,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Tooltip } from "antd";
 import { LogOut } from "lucide-react";
 import { Outlet } from "react-router-dom";
-import { navigate } from "../config/navigation";
+import { navigate } from "../components/Navigation/navigation";
 
 const { Header, Sider, Content } = Layout;
 
@@ -51,10 +51,12 @@ const App: React.FC = () => {
           </Tooltip>
         </Header>
         <Content
+          className="hidden-scroll"
           style={{
             margin: "24px 16px",
             padding: 24,
-            minHeight: 280,
+            height: "100vh",
+            overflowY: "auto",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

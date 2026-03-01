@@ -1,111 +1,226 @@
-import React from "react";
-import { Flex, Space, Table, Tag, Input, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Input,
+  Select,
+  Button,
+  Tooltip,
+  Badge,
+  Tag,
+  Popconfirm,
+} from "antd";
 import type { SearchProps } from "antd/es/input";
-
-const { Column, ColumnGroup } = Table;
-
-interface DataType {
-  key: React.Key;
-  firstName: string;
-  lastName: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
-
-const data: DataType[] = [
-  {
-    key: "1",
-    firstName: "John",
-    lastName: "Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"],
-  },
-  {
-    key: "2",
-    firstName: "Jim",
-    lastName: "Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["loser"],
-  },
-  {
-    key: "3",
-    firstName: "Joe",
-    lastName: "Black",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    tags: ["cool", "teacher"],
-  },
-];
+import useUsersStore from "../../store/useUserStore";
+import type { UserType } from "../../types";
+import type { ColumnsType } from "antd/es/table";
+import { PAGINATION } from "../../constants/pagination";
+import { convertDayMonthYear } from "../../utils/date";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 
 const Users: React.FC = () => {
   const { Search } = Input;
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const { getListUsers, deleteUser, data, total, isLoading } = useUsersStore();
+  const [page, setPage] = useState(PAGINATION.PAGE);
+  const [page_size, setPageSize] = useState(PAGINATION.PAGE_SIZE);
+  const [search, setSearch] = useState("");
+  const [verify, setVerify] = useState();
+  const [role, setRole] = useState();
+  const [is_active, setActive] = useState();
+
+  useEffect(() => {
+    getListUsers({ page, page_size, search, verify, role, is_active });
+  }, [page, search, verify, role, is_active]);
+
+  const onSearch: SearchProps["onSearch"] = (value) => {
+    setSearch(value);
+  };
+
+  const columns: ColumnsType<UserType> = [
+    {
+      title: "Họ",
+      dataIndex: "first_name",
+      key: "first_name",
+      render: (value) => {
+        return value || "-";
+      },
+    },
+    {
+      title: "Tên",
+      dataIndex: "last_name",
+      key: "last_name",
+      render: (value) => {
+        return value || "-";
+      },
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Mật khẩu",
+      dataIndex: "password",
+      key: "password",
+    },
+    {
+      title: "Ngày sinh",
+      dataIndex: "date_of_birth",
+      key: "date_of_birth",
+      render: (value) => {
+        return convertDayMonthYear(value);
+      },
+    },
+    {
+      title: "Xác thực",
+      dataIndex: "verify",
+      key: "verify",
+      render: (value) => {
+        return value == 0 ? (
+          <Badge
+            key={VERIFY_LABEL.UNVERIFIED}
+            color={"geekblue"}
+            text={VERIFY_LABEL.UNVERIFIED}
+          />
+        ) : value == 1 ? (
+          <Badge
+            key={VERIFY_LABEL.VERIFIED}
+            color={"lime"}
+            text={VERIFY_LABEL.VERIFIED}
+          />
+        ) : (
+          <Badge
+            key={VERIFY_LABEL.BANNED}
+            color={"red"}
+            text={VERIFY_LABEL.BANNED}
+          />
+        );
+      },
+    },
+    {
+      title: "Trang thái hoạt động",
+      dataIndex: "active",
+      key: "active",
+      render: (value) =>
+        value == true ? (
+          <Tag color={"green"} key={"is_active"}>
+            Hoạt động
+          </Tag>
+        ) : (
+          <Tag color={"red"} key={"not_active"}>
+            Không hoạt động
+          </Tag>
+        ),
+    },
+    {
+      title: "Hành động",
+      dataIndex: "active",
+      render: (_, record) => {
+        return (
+          <>
+            <div className="flex gap-x-2 items-center">
+              <Tooltip title="Chi tiết">
+                <Button color="default" variant="outlined">
+                  <EyeOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Xóa">
+                <Popconfirm
+                  title="Sure to delete?"
+                  onConfirm={() => {
+                    deleteUser(record._id as string);
+                    getListUsers({
+                      page,
+                      page_size,
+                      search,
+                      verify,
+                      role,
+                      is_active,
+                    });
+                  }}
+                >
+                  <Button color="danger" variant="outlined">
+                    <DeleteOutlined />
+                  </Button>
+                </Popconfirm>
+              </Tooltip>
+            </div>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
     <>
-      <h2 className="text-xl font-medium">Users</h2>
+      <h2 className="text-xl font-medium">Người dùng</h2>
       <div className="my-10 flex items-center gap-x-10">
         <Search
-          placeholder="Search username"
+          placeholder="Tìm kiếm email"
           onSearch={onSearch}
           style={{ width: 200 }}
         />
         <Select
+          className="w-50"
           showSearch={{
             filterOption: (input, option) =>
               (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
           }}
-          placeholder="Select a person"
+          placeholder="Chọn quyền"
           options={[
-            { value: "1", label: "Jack" },
-            { value: "2", label: "Lucy" },
-            { value: "3", label: "Tom" },
+            { value: 0, label: "Admin" },
+            { value: 1, label: "User" },
           ]}
+          allowClear
+          onChange={(value) => setRole(value)}
+        />
+        <Select
+          className="w-50"
+          showSearch={{
+            filterOption: (input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
+          }}
+          placeholder="Chọn trạng thái xác thực"
+          options={[
+            { value: VERIFY_VALUE.UNVERIFIED, label: VERIFY_LABEL.UNVERIFIED },
+            { value: VERIFY_VALUE.VERIFIED, label: VERIFY_LABEL.VERIFIED },
+            { value: VERIFY_VALUE.BANNED, label: VERIFY_LABEL.BANNED },
+          ]}
+          allowClear
+          onChange={(value) => setVerify(value)}
+        />
+        <Select
+          className="w-50"
+          showSearch={{
+            filterOption: (input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
+          }}
+          placeholder="Chọn trạng thái hoạt động"
+          options={[
+            { value: false, label: "Không hoạt động" },
+            { value: true, label: "Đang hoạt động" },
+          ]}
+          allowClear
+          onChange={(value) => setActive(value)}
         />
       </div>
-      <Table<DataType> dataSource={data}>
-        <ColumnGroup title="Name">
-          <Column title="First Name" dataIndex="firstName" key="firstName" />
-          <Column title="Last Name" dataIndex="lastName" key="lastName" />
-        </ColumnGroup>
-        <Column title="Age" dataIndex="age" key="age" />
-        <Column title="Address" dataIndex="address" key="address" />
-        <Column
-          title="Tags"
-          dataIndex="tags"
-          key="tags"
-          render={(tags: string[]) => (
-            <Flex gap="small" align="center" wrap>
-              {tags.map((tag) => {
-                let color = tag.length > 5 ? "geekblue" : "green";
-                if (tag === "loser") {
-                  color = "volcano";
-                }
-                return (
-                  <Tag color={color} key={tag}>
-                    {tag.toUpperCase()}
-                  </Tag>
-                );
-              })}
-            </Flex>
-          )}
-        />
-        <Column
-          title="Action"
-          key="action"
-          render={(_, record: DataType) => (
-            <Space size="middle">
-              <a>Invite {record.lastName}</a>
-              <a>Delete</a>
-            </Space>
-          )}
-        />
-      </Table>
+      <Table<UserType>
+        columns={columns}
+        rowKey={(record) => `${record._id}_table`}
+        pagination={{
+          current: page,
+          pageSize: page_size,
+          total: Number(total),
+          showSizeChanger: true,
+          onChange: (page, page_size) => {
+            setPage(page);
+            setPageSize(page_size);
+          },
+        }}
+        dataSource={data}
+        loading={isLoading}
+      />
     </>
   );
 };
