@@ -24,6 +24,11 @@ export const API_URLS = {
       headers: HEADERS.DEFAULT_HEADER,
       params,
     }),
+    getDetailUser: (id: string) => ({
+      endPoint: `/api/user/${id}`,
+      method: "GET",
+      headers: HEADERS.DEFAULT_HEADER,
+    }),
     deleteUser: (id: string) => ({
       endPoint: `/api/user/${id}`,
       method: "DELETE",

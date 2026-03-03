@@ -8,6 +8,7 @@ import {
   Badge,
   Tag,
   Popconfirm,
+  Modal,
 } from "antd";
 import type { SearchProps } from "antd/es/input";
 import useUsersStore from "../../store/useUserStore";
@@ -17,27 +18,60 @@ import { PAGINATION } from "../../constants/pagination";
 import { convertDayMonthYear } from "../../utils/date";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
+import { notification } from "antd";
 
 const Users: React.FC = () => {
   const { Search } = Input;
 
-  const { getListUsers, deleteUser, data, total, isLoading } = useUsersStore();
+  const {
+    getListUsers,
+    deleteUser,
+    getDetailUser,
+    detailUser,
+    data,
+    total,
+    isLoading,
+  } = useUsersStore();
   const [page, setPage] = useState(PAGINATION.PAGE);
   const [page_size, setPageSize] = useState(PAGINATION.PAGE_SIZE);
   const [search, setSearch] = useState("");
   const [verify, setVerify] = useState();
   const [role, setRole] = useState();
   const [is_active, setActive] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     getListUsers({ page, page_size, search, verify, role, is_active });
-  }, [page, search, verify, role, is_active]);
+  }, [page, page_size, search, verify, role, is_active]);
+
+  const handleDeletedUser = async (id: string) => {
+    try {
+      await deleteUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Xóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi xóa người dùng!",
+      });
+    }
+  };
 
   const onSearch: SearchProps["onSearch"] = (value) => {
     setSearch(value);
   };
 
+  const handleUpdateUser = () => {};
+
   const columns: ColumnsType<UserType> = [
+    {
+      title: "STT",
+      key: "stt",
+      render: (_: any, _record: UserType, index: number) => (index += 1),
+    },
     {
       title: "Họ",
       dataIndex: "first_name",
@@ -63,6 +97,7 @@ const Users: React.FC = () => {
       title: "Mật khẩu",
       dataIndex: "password",
       key: "password",
+      width: 200,
     },
     {
       title: "Ngày sinh",
@@ -121,24 +156,21 @@ const Users: React.FC = () => {
           <>
             <div className="flex gap-x-2 items-center">
               <Tooltip title="Chi tiết">
-                <Button color="default" variant="outlined">
+                <Button
+                  color="default"
+                  variant="outlined"
+                  onClick={() => {
+                    getDetailUser(record._id as string);
+                    setIsModalOpen(true);
+                  }}
+                >
                   <EyeOutlined />
                 </Button>
               </Tooltip>
               <Tooltip title="Xóa">
                 <Popconfirm
                   title="Sure to delete?"
-                  onConfirm={() => {
-                    deleteUser(record._id as string);
-                    getListUsers({
-                      page,
-                      page_size,
-                      search,
-                      verify,
-                      role,
-                      is_active,
-                    });
-                  }}
+                  onConfirm={() => handleDeletedUser(record._id as string)}
                 >
                   <Button color="danger" variant="outlined">
                     <DeleteOutlined />
@@ -218,9 +250,21 @@ const Users: React.FC = () => {
             setPageSize(page_size);
           },
         }}
+        scroll={{ x: "max-content" }}
         dataSource={data}
         loading={isLoading}
       />
+      <Modal
+        title="Chi tiết người dùng"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        onOk={handleUpdateUser}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <p>
+          {detailUser?.first_name} - {detailUser?.last_name}
+        </p>
+      </Modal>
     </>
   );
 };
