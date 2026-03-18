@@ -262,7 +262,15 @@ const Users: React.FC = () => {
         onCancel={() => setIsModalOpen(false)}
       >
         <p>
-          {detailUser?.first_name} - {detailUser?.last_name}
+          <strong>Họ và tên:</strong> {detailUser?.first_name}{" "}
+          {detailUser?.last_name}
+        </p>
+        <p>
+          <strong>Email:</strong> {detailUser?.email}
+        </p>
+        <p>
+          <strong>Năm sinh:</strong>{" "}
+          {convertDayMonthYear(detailUser?.date_of_birth as Date)}
         </p>
       </Modal>
     </>
