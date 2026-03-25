@@ -17,6 +17,7 @@ export type UserVerifyStatus = {
 };
 
 export type UserType = {
+  active: boolean;
   _id?: string;
   email: string;
   password: string;

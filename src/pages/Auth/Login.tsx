@@ -1,6 +1,26 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message, notification } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import useUsersStore from "../../store/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const { loginUser } = useUsersStore();
+  const navigate = useNavigate();
+
+  const onFinish = async (values: any) => {
+    try {
+      await loginUser(values);
+      message.success("Đăng nhập thành công");
+      navigate("/");
+    } catch (error) {
+      console.log("error", error);
+      notification.error({
+        message: "Thất bại",
+        description: "Sai tên đăng nhập hoặc mật khẩu",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-white relative flex items-center justify-center">
       <div
@@ -22,22 +42,29 @@ const Login = () => {
           We missed you! Please enter your details.
         </i>
         <div className="px-10">
-          <Form layout="vertical">
+          <Form layout="vertical" onFinish={onFinish}>
             <Form.Item
               label="Email"
               name="email"
               rules={[{ message: "Please input your email!" }]}
             >
-              <Input placeholder="Nhập email" />
+              <Input prefix={<UserOutlined />} placeholder="Nhập email" />
             </Form.Item>
             <Form.Item
               label="Password"
               name="password"
               rules={[{ message: "Please input your password!" }]}
             >
-              <Input.Password placeholder="Nhập password" />
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Nhập password"
+              />
             </Form.Item>
-            <Button className="w-full text-white! bg-[#6375f1]! py-5!">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full text-white! bg-[#6375f1]! py-5!"
+            >
               Login
             </Button>
           </Form>

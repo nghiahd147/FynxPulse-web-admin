@@ -16,7 +16,12 @@ import type { UserType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import { PAGINATION } from "../../constants/pagination";
 import { convertDayMonthYear } from "../../utils/date";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  SafetyOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 import { notification } from "antd";
 
@@ -39,6 +44,7 @@ const Users: React.FC = () => {
   const [role, setRole] = useState();
   const [is_active, setActive] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { bandUser, unBandUser } = useUsersStore();
 
   useEffect(() => {
     getListUsers({ page, page_size, search, verify, role, is_active });
@@ -60,11 +66,41 @@ const Users: React.FC = () => {
     }
   };
 
+  const handleBandUser = async (id: string) => {
+    try {
+      await bandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi khi khóa người dùng!",
+      });
+    }
+  };
+
+  const handleUnBandUser = async (id: string) => {
+    try {
+      await unBandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Mở khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi khi mở khóa người dùng!",
+      });
+    }
+  };
+
   const onSearch: SearchProps["onSearch"] = (value) => {
     setSearch(value);
   };
-
-  const handleUpdateUser = () => {};
 
   const columns: ColumnsType<UserType> = [
     {
@@ -155,6 +191,28 @@ const Users: React.FC = () => {
         return (
           <>
             <div className="flex gap-x-2 items-center">
+              <Tooltip title="Khóa tài khoản">
+                <Button
+                  color="red"
+                  variant="outlined"
+                  onClick={() => {
+                    handleBandUser(record._id as string);
+                  }}
+                >
+                  <StopOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Mở tài khoản">
+                <Button
+                  color="green"
+                  variant="outlined"
+                  onClick={() => {
+                    handleUnBandUser(record._id as string);
+                  }}
+                >
+                  <SafetyOutlined />
+                </Button>
+              </Tooltip>
               <Tooltip title="Chi tiết">
                 <Button
                   color="default"
@@ -187,6 +245,7 @@ const Users: React.FC = () => {
   return (
     <>
       <h2 className="text-xl font-medium">Người dùng</h2>
+
       <div className="my-10 flex items-center gap-x-10">
         <Search
           placeholder="Tìm kiếm email"
@@ -237,6 +296,7 @@ const Users: React.FC = () => {
           onChange={(value) => setActive(value)}
         />
       </div>
+
       <Table<UserType>
         columns={columns}
         rowKey={(record) => `${record._id}_table`}
@@ -254,12 +314,13 @@ const Users: React.FC = () => {
         dataSource={data}
         loading={isLoading}
       />
+
       <Modal
         title="Chi tiết người dùng"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
-        onOk={handleUpdateUser}
         onCancel={() => setIsModalOpen(false)}
+        okButtonProps={{ style: { display: "none" } }}
       >
         <p>
           <strong>Họ và tên:</strong> {detailUser?.first_name}{" "}

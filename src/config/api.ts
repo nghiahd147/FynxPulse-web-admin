@@ -18,21 +18,43 @@ export const HEADERS = {
 
 export const API_URLS = {
   USERS: {
+    login: (payload: { email: string; password: string }) => ({
+      endPoint: "/api/user/login",
+      method: "POST",
+      headers: HEADERS.DEFAULT_HEADER,
+      payload,
+    }),
+    logout: (refresh_token: string) => ({
+      endPoint: "/api/user/logout",
+      method: "POST",
+      headers: HEADERS.jsonHeader(),
+      payload: { refresh_token },
+    }),
     getListUsers: (params: Record<string, unknown>) => ({
       endPoint: "/api/user/",
       method: "GET",
-      headers: HEADERS.DEFAULT_HEADER,
+      headers: HEADERS.jsonHeader(),
       params,
     }),
     getDetailUser: (id: string) => ({
       endPoint: `/api/user/${id}`,
       method: "GET",
-      headers: HEADERS.DEFAULT_HEADER,
+      headers: HEADERS.jsonHeader(),
+    }),
+    bandUser: (id: string) => ({
+      endPoint: `/api/user/${id}/band`,
+      method: "PATCH",
+      headers: HEADERS.jsonHeader(),
+    }),
+    unBandUser: (id: string) => ({
+      endPoint: `/api/user/${id}/unband`,
+      method: "PATCH",
+      headers: HEADERS.jsonHeader(),
     }),
     deleteUser: (id: string) => ({
       endPoint: `/api/user/${id}`,
       method: "DELETE",
-      headers: HEADERS.DEFAULT_HEADER,
+      headers: HEADERS.jsonHeader(),
     }),
   },
 };

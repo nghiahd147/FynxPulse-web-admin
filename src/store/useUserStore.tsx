@@ -11,6 +11,10 @@ type UserStore = {
   getListUsers: (params: any) => void;
   getDetailUser: (id: string) => void;
   deleteUser: (id: string) => void;
+  loginUser: (payload: { email: string; password: string }) => void;
+  logoutUser: (refresh_token: string) => void;
+  bandUser: (id: string) => void;
+  unBandUser: (id: string) => void;
 };
 
 const useUsersStore = create<UserStore>()((set) => ({
@@ -41,6 +45,42 @@ const useUsersStore = create<UserStore>()((set) => ({
     set({ isLoading: true });
     try {
       await apiCall(API_URLS.USERS.deleteUser(id));
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  loginUser: async (payload) => {
+    set({ isLoading: false });
+    try {
+      const res = await apiCall(API_URLS.USERS.login(payload));
+      localStorage.setItem("access_token", res.result.accessToken);
+      localStorage.setItem("refresh_token", res.result.refreshToken);
+    } finally {
+      set({ isLoading: true });
+    }
+  },
+  logoutUser: async (refresh_token: string) => {
+    set({ isLoading: true });
+    try {
+      await apiCall(API_URLS.USERS.logout(refresh_token));
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  bandUser: async (id: string) => {
+    set({ isLoading: true });
+    try {
+      await apiCall(API_URLS.USERS.bandUser(id));
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  unBandUser: async (id: string) => {
+    set({ isLoading: true });
+    try {
+      await apiCall(API_URLS.USERS.unBandUser(id));
     } finally {
       set({ isLoading: false });
     }
