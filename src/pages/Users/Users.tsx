@@ -16,12 +16,7 @@ import type { UserType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import { PAGINATION } from "../../constants/pagination";
 import { convertDayMonthYear } from "../../utils/date";
-import {
-  DeleteOutlined,
-  EyeOutlined,
-  SafetyOutlined,
-  StopOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 import { notification } from "antd";
 
@@ -44,7 +39,6 @@ const Users: React.FC = () => {
   const [role, setRole] = useState();
   const [is_active, setActive] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { bandUser, unBandUser } = useUsersStore();
 
   useEffect(() => {
     getListUsers({ page, page_size, search, verify, role, is_active });
@@ -62,38 +56,6 @@ const Users: React.FC = () => {
       notification.error({
         message: "Lỗi",
         description: "Lỗi xóa người dùng!",
-      });
-    }
-  };
-
-  const handleBandUser = async (id: string) => {
-    try {
-      await bandUser(id);
-      notification.success({
-        message: "Thành công",
-        description: "Khóa người dùng thành công!",
-      });
-      getListUsers({ page, page_size, search, verify, role, is_active });
-    } catch (error) {
-      notification.error({
-        message: "Lỗi",
-        description: "Lỗi khi khóa người dùng!",
-      });
-    }
-  };
-
-  const handleUnBandUser = async (id: string) => {
-    try {
-      await unBandUser(id);
-      notification.success({
-        message: "Thành công",
-        description: "Mở khóa người dùng thành công!",
-      });
-      getListUsers({ page, page_size, search, verify, role, is_active });
-    } catch (error) {
-      notification.error({
-        message: "Lỗi",
-        description: "Lỗi khi mở khóa người dùng!",
       });
     }
   };
@@ -191,28 +153,6 @@ const Users: React.FC = () => {
         return (
           <>
             <div className="flex gap-x-2 items-center">
-              <Tooltip title="Khóa tài khoản">
-                <Button
-                  color="red"
-                  variant="outlined"
-                  onClick={() => {
-                    handleBandUser(record._id as string);
-                  }}
-                >
-                  <StopOutlined />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Mở tài khoản">
-                <Button
-                  color="green"
-                  variant="outlined"
-                  onClick={() => {
-                    handleUnBandUser(record._id as string);
-                  }}
-                >
-                  <SafetyOutlined />
-                </Button>
-              </Tooltip>
               <Tooltip title="Chi tiết">
                 <Button
                   color="default"

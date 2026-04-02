@@ -1,3 +1,5 @@
+import type { Params } from "react-router-dom";
+
 export const HEADERS = {
   DEFAULT_HEADER: {
     "Content-Type": "application/json",
@@ -30,7 +32,7 @@ export const API_URLS = {
       headers: HEADERS.jsonHeader(),
       payload: { refresh_token },
     }),
-    getListUsers: (params: Record<string, unknown>) => ({
+    getListUsers: (params: Params) => ({
       endPoint: "/api/user/",
       method: "GET",
       headers: HEADERS.jsonHeader(),
@@ -55,6 +57,14 @@ export const API_URLS = {
       endPoint: `/api/user/${id}`,
       method: "DELETE",
       headers: HEADERS.jsonHeader(),
+    }),
+  },
+  POSTS: {
+    getListPosts: (params: Params) => ({
+      endPoint: "/api/post/",
+      method: "GET",
+      headers: HEADERS.jsonHeader(),
+      params,
     }),
   },
 };
