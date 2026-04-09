@@ -44,14 +44,20 @@ export const API_URLS = {
       headers: HEADERS.jsonHeader(),
     }),
     bandUser: (id: string) => ({
-      endPoint: `/api/user/${id}/band`,
+      endPoint: `/api/user/${id}/ban`,
       method: "PATCH",
       headers: HEADERS.jsonHeader(),
     }),
     unBandUser: (id: string) => ({
-      endPoint: `/api/user/${id}/unband`,
+      endPoint: `/api/user/${id}/unban`,
       method: "PATCH",
       headers: HEADERS.jsonHeader(),
+    }),
+    switchUserRole: (id: string, role: number) => ({
+      endPoint: `/api/user/${id}/role`,
+      method: "PATCH",
+      headers: HEADERS.jsonHeader(),
+      payload: { role },
     }),
     deleteUser: (id: string) => ({
       endPoint: `/api/user/${id}`,

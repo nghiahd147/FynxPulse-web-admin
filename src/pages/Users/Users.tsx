@@ -16,7 +16,12 @@ import type { UserType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import { PAGINATION } from "../../constants/pagination";
 import { convertDayMonthYear } from "../../utils/date";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  LockOutlined,
+  UnlockOutlined,
+} from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
 import { notification } from "antd";
 
@@ -28,6 +33,9 @@ const Users: React.FC = () => {
     deleteUser,
     getDetailUser,
     detailUser,
+    bandUser,
+    unBandUser,
+    switchUserRole,
     data,
     total,
     isLoading,
@@ -53,9 +61,61 @@ const Users: React.FC = () => {
       });
       getListUsers({ page, page_size, search, verify, role, is_active });
     } catch (error) {
+      console.error(error);
       notification.error({
         message: "Lỗi",
         description: "Lỗi xóa người dùng!",
+      });
+    }
+  };
+
+  const handleBandUser = async (id: string) => {
+    try {
+      await bandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi khóa người dùng!",
+      });
+    }
+  };
+
+  const handleUnBandUser = async (id: string) => {
+    try {
+      await unBandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Mở khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi mở khóa người dùng!",
+      });
+    }
+  };
+
+  const handleSwitchRoleUser = async (value: number, id: string) => {
+    try {
+      await switchUserRole(id, value);
+      notification.success({
+        message: "Thành công",
+        description: "Thay đổi quyền người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi thay đổi quyền người dùng!",
       });
     }
   };
@@ -132,7 +192,29 @@ const Users: React.FC = () => {
       },
     },
     {
-      title: "Trang thái hoạt động",
+      title: "Quyền người dùng",
+      dataIndex: "role",
+      key: "role",
+      render: (value, record) => {
+        return (
+          <Select
+            size="small"
+            className="w-27.5"
+            defaultValue={value}
+            placeholder="Select a person"
+            onChange={(currentValue) =>
+              handleSwitchRoleUser(currentValue, record._id as string)
+            }
+            options={[
+              { value: 0, label: "Quản trị" },
+              { value: 1, label: "Khách hàng" },
+            ]}
+          />
+        );
+      },
+    },
+    {
+      title: "Trạng thái hoạt động",
       dataIndex: "active",
       key: "active",
       render: (value) =>
@@ -163,6 +245,28 @@ const Users: React.FC = () => {
                   }}
                 >
                   <EyeOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Khóa người dùng">
+                <Button
+                  color="orange"
+                  variant="outlined"
+                  onClick={() => {
+                    handleBandUser(record._id as string);
+                  }}
+                >
+                  <LockOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Mở khóa người dùng">
+                <Button
+                  color="green"
+                  variant="outlined"
+                  onClick={() => {
+                    handleUnBandUser(record._id as string);
+                  }}
+                >
+                  <UnlockOutlined />
                 </Button>
               </Tooltip>
               <Tooltip title="Xóa">
@@ -200,8 +304,8 @@ const Users: React.FC = () => {
           }}
           placeholder="Chọn quyền"
           options={[
-            { value: 0, label: "Admin" },
-            { value: 1, label: "User" },
+            { value: 0, label: "Quản trị" },
+            { value: 1, label: "Khách hàng" },
           ]}
           allowClear
           onChange={(value) => setRole(value)}

@@ -15,6 +15,7 @@ type UserStore = {
   logoutUser: (refresh_token: string) => void;
   bandUser: (id: string) => void;
   unBandUser: (id: string) => void;
+  switchUserRole: (id: string, role: number) => void;
 };
 
 const useUsersStore = create<UserStore>()((set) => ({
@@ -81,6 +82,14 @@ const useUsersStore = create<UserStore>()((set) => ({
     set({ isLoading: true });
     try {
       await apiCall(API_URLS.USERS.unBandUser(id));
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  switchUserRole: async (id: string, role: number) => {
+    set({ isLoading: true });
+    try {
+      await apiCall(API_URLS.USERS.switchUserRole(id, role));
     } finally {
       set({ isLoading: false });
     }
