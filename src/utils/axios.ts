@@ -10,8 +10,8 @@ export const apiCall = async ({
   endPoint: string;
   method: string;
   payload?: Record<string, any>;
-  headers?: Record<string, string>;
-  params?: string;
+  headers?: Record<string, any>;
+  params?: Record<string, unknown>;
 }) => {
   try {
     const result = await axios({

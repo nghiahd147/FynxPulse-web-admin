@@ -8,6 +8,7 @@ import {
   Badge,
   Tag,
   Popconfirm,
+  Modal,
 } from "antd";
 import type { SearchProps } from "antd/es/input";
 import useUsersStore from "../../store/useUserStore";
@@ -15,29 +16,120 @@ import type { UserType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import { PAGINATION } from "../../constants/pagination";
 import { convertDayMonthYear } from "../../utils/date";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EyeOutlined,
+  LockOutlined,
+  UnlockOutlined,
+} from "@ant-design/icons";
 import { VERIFY_LABEL, VERIFY_VALUE } from "../../constants/status";
+import { notification } from "antd";
 
 const Users: React.FC = () => {
   const { Search } = Input;
 
-  const { getListUsers, deleteUser, data, total, isLoading } = useUsersStore();
+  const {
+    getListUsers,
+    deleteUser,
+    getDetailUser,
+    detailUser,
+    bandUser,
+    unBandUser,
+    switchUserRole,
+    data,
+    total,
+    isLoading,
+  } = useUsersStore();
   const [page, setPage] = useState(PAGINATION.PAGE);
   const [page_size, setPageSize] = useState(PAGINATION.PAGE_SIZE);
   const [search, setSearch] = useState("");
   const [verify, setVerify] = useState();
   const [role, setRole] = useState();
   const [is_active, setActive] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     getListUsers({ page, page_size, search, verify, role, is_active });
-  }, [page, search, verify, role, is_active]);
+  }, [page, page_size, search, verify, role, is_active]);
+
+  const handleDeletedUser = async (id: string) => {
+    try {
+      await deleteUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Xóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi xóa người dùng!",
+      });
+    }
+  };
+
+  const handleBandUser = async (id: string) => {
+    try {
+      await bandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi khóa người dùng!",
+      });
+    }
+  };
+
+  const handleUnBandUser = async (id: string) => {
+    try {
+      await unBandUser(id);
+      notification.success({
+        message: "Thành công",
+        description: "Mở khóa người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi mở khóa người dùng!",
+      });
+    }
+  };
+
+  const handleSwitchRoleUser = async (value: number, id: string) => {
+    try {
+      await switchUserRole(id, value);
+      notification.success({
+        message: "Thành công",
+        description: "Thay đổi quyền người dùng thành công!",
+      });
+      getListUsers({ page, page_size, search, verify, role, is_active });
+    } catch (error) {
+      console.error(error);
+      notification.error({
+        message: "Lỗi",
+        description: "Lỗi thay đổi quyền người dùng!",
+      });
+    }
+  };
 
   const onSearch: SearchProps["onSearch"] = (value) => {
     setSearch(value);
   };
 
   const columns: ColumnsType<UserType> = [
+    {
+      title: "STT",
+      key: "stt",
+      render: (_: any, _record: UserType, index: number) => (index += 1),
+    },
     {
       title: "Họ",
       dataIndex: "first_name",
@@ -63,6 +155,7 @@ const Users: React.FC = () => {
       title: "Mật khẩu",
       dataIndex: "password",
       key: "password",
+      width: 200,
     },
     {
       title: "Ngày sinh",
@@ -99,7 +192,29 @@ const Users: React.FC = () => {
       },
     },
     {
-      title: "Trang thái hoạt động",
+      title: "Quyền người dùng",
+      dataIndex: "role",
+      key: "role",
+      render: (value, record) => {
+        return (
+          <Select
+            size="small"
+            className="w-27.5"
+            defaultValue={value}
+            placeholder="Select a person"
+            onChange={(currentValue) =>
+              handleSwitchRoleUser(currentValue, record._id as string)
+            }
+            options={[
+              { value: 0, label: "Quản trị" },
+              { value: 1, label: "Khách hàng" },
+            ]}
+          />
+        );
+      },
+    },
+    {
+      title: "Trạng thái hoạt động",
       dataIndex: "active",
       key: "active",
       render: (value) =>
@@ -121,24 +236,43 @@ const Users: React.FC = () => {
           <>
             <div className="flex gap-x-2 items-center">
               <Tooltip title="Chi tiết">
-                <Button color="default" variant="outlined">
+                <Button
+                  color="default"
+                  variant="outlined"
+                  onClick={() => {
+                    getDetailUser(record._id as string);
+                    setIsModalOpen(true);
+                  }}
+                >
                   <EyeOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Khóa người dùng">
+                <Button
+                  color="orange"
+                  variant="outlined"
+                  onClick={() => {
+                    handleBandUser(record._id as string);
+                  }}
+                >
+                  <LockOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Mở khóa người dùng">
+                <Button
+                  color="green"
+                  variant="outlined"
+                  onClick={() => {
+                    handleUnBandUser(record._id as string);
+                  }}
+                >
+                  <UnlockOutlined />
                 </Button>
               </Tooltip>
               <Tooltip title="Xóa">
                 <Popconfirm
                   title="Sure to delete?"
-                  onConfirm={() => {
-                    deleteUser(record._id as string);
-                    getListUsers({
-                      page,
-                      page_size,
-                      search,
-                      verify,
-                      role,
-                      is_active,
-                    });
-                  }}
+                  onConfirm={() => handleDeletedUser(record._id as string)}
                 >
                   <Button color="danger" variant="outlined">
                     <DeleteOutlined />
@@ -155,6 +289,7 @@ const Users: React.FC = () => {
   return (
     <>
       <h2 className="text-xl font-medium">Người dùng</h2>
+
       <div className="my-10 flex items-center gap-x-10">
         <Search
           placeholder="Tìm kiếm email"
@@ -169,8 +304,8 @@ const Users: React.FC = () => {
           }}
           placeholder="Chọn quyền"
           options={[
-            { value: 0, label: "Admin" },
-            { value: 1, label: "User" },
+            { value: 0, label: "Quản trị" },
+            { value: 1, label: "Khách hàng" },
           ]}
           allowClear
           onChange={(value) => setRole(value)}
@@ -205,6 +340,7 @@ const Users: React.FC = () => {
           onChange={(value) => setActive(value)}
         />
       </div>
+
       <Table<UserType>
         columns={columns}
         rowKey={(record) => `${record._id}_table`}
@@ -218,9 +354,30 @@ const Users: React.FC = () => {
             setPageSize(page_size);
           },
         }}
+        scroll={{ x: "max-content" }}
         dataSource={data}
         loading={isLoading}
       />
+
+      <Modal
+        title="Chi tiết người dùng"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        okButtonProps={{ style: { display: "none" } }}
+      >
+        <p>
+          <strong>Họ và tên:</strong> {detailUser?.first_name}{" "}
+          {detailUser?.last_name}
+        </p>
+        <p>
+          <strong>Email:</strong> {detailUser?.email}
+        </p>
+        <p>
+          <strong>Năm sinh:</strong>{" "}
+          {convertDayMonthYear(detailUser?.date_of_birth as Date)}
+        </p>
+      </Modal>
     </>
   );
 };

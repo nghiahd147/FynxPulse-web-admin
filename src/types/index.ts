@@ -1,3 +1,5 @@
+export type Params = Record<string, unknown>;
+
 export type Pagination = {
   page: number;
   page_size: number;
@@ -17,6 +19,7 @@ export type UserVerifyStatus = {
 };
 
 export type UserType = {
+  active: boolean;
   _id?: string;
   email: string;
   password: string;
@@ -36,4 +39,39 @@ export type UserType = {
   website: string;
   avatar: string;
   profile_picture_url: string;
+};
+
+export type TypePost = {
+  Post: string;
+  Repost: string;
+  Comment: string;
+  QuotePost: string;
+};
+
+export type TypeMedia = {
+  url: string;
+  type: string;
+};
+
+export type PostAudience = {
+  everyone: string;
+  fynx_circle: string;
+};
+
+export type PostType = {
+  _id?: string;
+  author_id: string;
+  type: TypePost;
+  content: string;
+  media?: TypeMedia;
+  audience: PostAudience;
+  parent_id?: string;
+  hashtags?: string[];
+  mentions?: string[];
+  guest_view?: number;
+  user_view?: number;
+  like_count?: number;
+  comment_count?: number;
+  created_at?: Date;
+  updated_at?: Date;
 };

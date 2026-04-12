@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const navigate = [
+export const sideBar = [
   {
     key: "dashboard",
     icon: <LayoutDashboard size={15} />,
