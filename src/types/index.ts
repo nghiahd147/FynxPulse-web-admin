@@ -60,7 +60,11 @@ export type PostAudience = {
 
 export type PostType = {
   _id?: string;
-  author_id: string;
+  userInfo: {
+    _id: string;
+    first_name: string;
+    last_name: string;
+  };
   type: TypePost;
   content: string;
   media?: TypeMedia;
