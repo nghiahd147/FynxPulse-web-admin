@@ -1,4 +1,13 @@
-import { Badge, Button, Flex, Popconfirm, Table, Tag, Tooltip } from "antd";
+import {
+  Badge,
+  Button,
+  Flex,
+  Input,
+  Popconfirm,
+  Table,
+  Tag,
+  Tooltip,
+} from "antd";
 import type { PostType } from "../../types";
 import type { ColumnsType } from "antd/es/table";
 import usePostStore from "../../store/usePostStore";
@@ -6,11 +15,14 @@ import { useEffect } from "react";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 
 const Posts = () => {
+  const { Search } = Input;
   const { data, getListPost } = usePostStore();
 
   useEffect(() => {
     getListPost({});
   }, []);
+
+  const onSearch = () => {};
 
   const columns: ColumnsType<PostType> = [
     {
@@ -59,7 +71,7 @@ const Posts = () => {
       render: (value) => value.comment_count,
     },
     {
-      title: "Số người xem là khách",
+      title: "Số người xem tài khoản khách",
       key: "guest_view",
       align: "right",
       render: (value) => value.guest_view,
@@ -95,7 +107,13 @@ const Posts = () => {
   return (
     <div>
       <h2 className="text-xl font-medium">Bài viết</h2>
-      <div className="my-10 flex items-center gap-x-10"></div>
+      <div className="my-10 flex items-center gap-x-10">
+        <Search
+          placeholder="Tìm kiếm tên bài đăng"
+          onSearch={onSearch}
+          style={{ width: 200 }}
+        />
+      </div>
       <Table<PostType> columns={columns} dataSource={data} />
     </div>
   );

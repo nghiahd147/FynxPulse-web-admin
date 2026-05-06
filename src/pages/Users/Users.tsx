@@ -48,6 +48,8 @@ const Users: React.FC = () => {
   const [is_active, setActive] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log("detailUser", detailUser);
+
   useEffect(() => {
     getListUsers({ page, page_size, search, verify, role, is_active });
   }, [page, page_size, search, verify, role, is_active]);
@@ -366,17 +368,48 @@ const Users: React.FC = () => {
         onCancel={() => setIsModalOpen(false)}
         okButtonProps={{ style: { display: "none" } }}
       >
-        <p>
-          <strong>Họ và tên:</strong> {detailUser?.first_name}{" "}
-          {detailUser?.last_name}
-        </p>
-        <p>
-          <strong>Email:</strong> {detailUser?.email}
-        </p>
-        <p>
-          <strong>Năm sinh:</strong>{" "}
-          {convertDayMonthYear(detailUser?.date_of_birth as Date)}
-        </p>
+        <div className="flex items-center gap-3">
+          <img
+            src={detailUser?.profile_picture_url}
+            alt="avt-detail-user"
+            className="border-2 rounded-[100%] w-25 h-25"
+          />
+          <div className="flex flex-col">
+            <strong className="text-2xl">
+              {detailUser?.first_name} {detailUser?.last_name}
+            </strong>
+            <strong>
+              {detailUser?.is_active ? (
+                <Badge key={"Hoạt động"} color={"green"} text={"Hoạt động"} />
+              ) : (
+                <Badge
+                  key={"Không hoạt động"}
+                  color={"red"}
+                  text={"Không hoạt động"}
+                />
+              )}
+            </strong>
+          </div>
+        </div>
+        <div className="mt-2">
+          <strong className="text-2xl">Hồ sơ cá nhân</strong>
+        </div>
+        <div className="flex items-center gap-2 justify-between">
+          <div className="flex flex-col w-[45%]">
+            <span className="block">Email: {detailUser?.email}</span>
+            <span className="block">
+              Năm sinh: {convertDayMonthYear(detailUser?.date_of_birth as Date)}
+            </span>
+          </div>
+          <div className="flex flex-col w-[45%]">
+            <span className="block">
+              Địa chỉ: {detailUser?.location || "--- Chưa điền địa chỉ ---"}
+            </span>
+            <span className="block">
+              Quyền: {Number(detailUser?.role) == 0 ? "Quản trị" : "Người dùng"}
+            </span>
+          </div>
+        </div>
       </Modal>
     </>
   );
